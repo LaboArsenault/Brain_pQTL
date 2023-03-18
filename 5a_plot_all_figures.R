@@ -41,7 +41,7 @@ CMplot_eloi(as.data.frame(data), type="p", plot.type="m", LOG10=TRUE, threshold=
             height=6, col=c("grey70", "grey90"), threshold.lwd=2, cex=0.4, highlight.cex =  0.6, highlight=tomanhatthan$posprob_colocH4.SNP,
             highlight.text=tomanhatthan$hgnc_symbol, highlight.col = "red",
             highlight.text.xadj =rep(-1, length(tomanhatthan$hgnc_symbol)), highlight.text.yadj =rep(1, length(tomanhatthan$hgnc_symbol)),
-            file.output = TRUE, arrow_col_eloi = "black", highlight.text.cex=1, padding = 3)
+            file.output = TRUE, arrow_col_eloi = "black", highlight.text.cex=1, padding = 3, file=c("tiff"))
 
 setwd("/mnt/sda/gagelo01/Projects/Brain_pQTL/")
 #######Volcano#################
@@ -116,8 +116,8 @@ plot_volcano <- function(volcano, xlab = "Effect on BMI (Beta)", lim = 1) {
 
 volcanoplot <- plot_volcano(volcano = volcano, lim = lim)
 volcanoplot
-ggsave(plot = volcanoplot, filename = "Results/Volcano_pwas_plot.png",
-       width = 652/72,height = 585/72,units="in",scale=1, device = "png")
+ggsave(plot = volcanoplot, filename = "Results/Volcano_pwas_plot.tiff",
+       width = 652/72,height = 585/72,units="in",scale=1, device = "tiff")
 
 # volcanoplot <- ggplot(data = volcano, aes(x = b.wald, y = logpval, col = diffexpressed,  label=delabel)) +
 #   geom_point() +
@@ -215,10 +215,10 @@ v <- ven_2_set(input = input, cex = 0.80, cat.cex = 0.95,
 grid.newpage()
 grid.draw(v)
 # plot  
-reso <- 1200
+reso <- 300
 length <- 480*reso/72
 grid.newpage()
-png(file="Results/VennDiagramm_comparepwas_mapping.png", units="px", 
+tiff(file="Results/VennDiagramm_comparepwas_mapping.tiff", units="px", 
     res=reso,height=length,width=length ) # or other device
 # png(filename = "Results/VennDiagramm_comparepwas_mapping.png", width = 500, height = 500,units = "px", pointsize = 12)
 grid.draw(v)
@@ -229,15 +229,28 @@ dev.off()
 #####hyprcoloc plot
 dir.create("Results/Hypr_plot")
 exposure_vec <- c("ADCY3", "DOC2A")
+clean_name <- c("GTEX_DOC2A_eqtl-74-185" = "GTEx gene levels (DOC2A)",
+                "GTEX_ADCY3_eqtl-74-28" = "GTEx gene levels  (ADCY3)",
+                "rosmap_DOC2A_prot-2-3093" = "ROS/MAP protein levels (DOC2A)",
+                  "rosmap_ADCY3_prot-2-476" = "ROS/MAP protein levels (ADCY3)",
+                "banner_DOC2A_prot-3-2827" = "Banner protein levels (DOC2A)",
+                  "banner_ADCY3_prot-3-554"  = "Banner protein levels (ADCY3)",
+                "bmi_ukbgiant" = "Body mass index" )
+df_aligned <- exposure_hypr[gene.exposure %in% exposure_vec, ]
+df_aligned[,exposure := clean_name[exposure]]
+res_hypr1 <- res_hypr[gene_investigated %in% exposure_vec, ]
+# res_hypr1[,exposure := clean_name[exposure]]
+
+
 for(i in 1:length(exposure_vec)) {
   
-  A <- stack_assoc_plot_wrapper(df_aligned = exposure_hypr[gene.exposure == exposure_vec[i]],
-                                res_hypr1 = res_hypr[gene_investigated== exposure_vec[i]],
+  A <- stack_assoc_plot_wrapper(df_aligned = df_aligned[gene.exposure == exposure_vec[i]],
+                                res_hypr1 = res_hypr1[gene_investigated== exposure_vec[i]],
                                 ldref = "/home/couchr02/Mendel_Commun/Christian/LDlocal/EUR_rs",
-                                traits_inorder = unique(exposure_hypr[gene.exposure == exposure_vec[i]]$exposure),
+                                traits_inorder = unique(df_aligned[gene.exposure == exposure_vec[i]]$exposure),
                                 build = 37)
-  res <- sensitivity.plot_wrapper(df_aligned = exposure_hypr[gene.exposure == exposure_vec[i]],
-                                  traits_inorder = unique(exposure_hypr[gene.exposure == exposure_vec[i]]$exposure))
+  res <- sensitivity.plot_wrapper(df_aligned = df_aligned[gene.exposure == exposure_vec[i]],
+                                  traits_inorder = unique(df_aligned[gene.exposure == exposure_vec[i]]$exposure))
   B<-drawheatmap(res[[2]])
   twopanel <-  cowplot::ggdraw() +
     draw_plot(ggplotify::as.ggplot(A) + theme(text = element_text(size = 0.4)), x = 0.08, y =0, width = .6, height = 1) +
@@ -245,8 +258,8 @@ for(i in 1:length(exposure_vec)) {
     draw_plot_label(label = c("", ""), size = 25,
                     x = c(0, 0.62), y = c(0.9, 0.9))
 saveRDS(object = twopanel, file = paste0("Results/Hypr_plot/", "twopanel_hypr_plot_",exposure_vec[i], ".rds"))
-  ggsave(plot = twopanel, filename = paste0("Results/Hypr_plot/", "twopanel_hypr_plot_",exposure_vec[i], ".png"),
-         width = 790/72,height = 683/72,units="in",scale=1, device = "png")
+  ggsave(plot = twopanel, filename = paste0("Results/Hypr_plot/", "twopanel_hypr_plot_",exposure_vec[i], ".tiff"),
+         width = 790/72,height = 683/72,units="in",scale=1, device = "tiff")
 }
 
 
@@ -256,8 +269,8 @@ ggpubr::ggarrange(list_plot[[1]], list_plot[[2]],
           labels = c("A)", "B)"),
           ncol = 2, nrow = 1)
 
-ggsave(filename =  paste0("Results/twopanel_hypr_plot_AB.png"),  
-       width = 1535/72, height = 775/72, units = "in", scale = 1, device="png" )
+ggsave(filename =  paste0("Results/twopanel_hypr_plot_AB.tiff"),  
+       width = 1535/72, height = 775/72, units = "in", scale = 1, device="tiff" )
 #######histogramm tissue celltype############
 # histogramm_tissue_celltype <- function(M) {
 #   M[,logp := -log10(P)]
@@ -302,7 +315,7 @@ res_specificity <- res_specificity[UniProt%in%res_pwas$UniProt,]
 k <- rbindlist(list(res_pwas, res_specificity), fill = TRUE)
 listInput <- lapply(split(k, k$study), function(x) unique(x$UniProt))
 plotupset <- UpSetR::upset(UpSetR::fromList(listInput), order.by = "freq", nsets = length(listInput))
-png(file="Results/upset_full.png") # or other device
+tiff(file="Results/upset_full.tiff") # or other device
 plotupset
 dev.off()
 
@@ -312,9 +325,9 @@ studyvec<-c(yang="Yang et al.", deCODE = "deCODE", FENLAND = "Fenland", GTEX = "
 kcause[, study := studyvec[study]]
 listInput <- lapply(split(kcause, kcause$study), function(x) x$V1)
 plotupset_cause<-UpSetR::upset(UpSetR::fromList(listInput), order.by = "freq", nsets = length(listInput))
-reso <- 1200
+reso <- 300
 length <- 480*reso/72
-png(file="Results/upset_cause.png", units="px", res=reso,height=length,width=length ) # or other device
+tiff(file="Results/upset_cause.tiff", units="px", res=reso,height=length,width=length ) # or other device
 plotupset_cause
 dev.off()
 ######heatmap tissular specificity 
