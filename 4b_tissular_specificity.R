@@ -14,7 +14,7 @@ dt_gene_region <- fread( "Data/Modified/dt_gene_region.txt")
 get_tpm_for_genes_on_all_tissues <- function(gene_list, 
                                              gencode = data.table::fread("/home/couchr02/workspace/GTEx_v8/gencode.v26.GRCh38.genes.txt", data.table = F, stringsAsFactors = F, nThread = 6),
                                              tissue_gtex_wd =  "/home/couchr02/workspace/GTEx_v8/list/",
-                                             gtex_tpm_file_name = "/home/couchr02/Mendel_Commun/GTEx_v8/eQTL/exp_TPM/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct",
+                                             gtex_tpm_file_name = "/home/couchr02/Mendel_Commun/GTEx_v8_TPM/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct",
                                              individus_EUR = data.table::fread("/home/couchr02/Mendel_Commun/Nicolas/GTEx_V8/EUR_GTEx8.txt", stringsAsFactors = F, data.table = F, header = F)
 ){
   if (exists("data_tau")){
