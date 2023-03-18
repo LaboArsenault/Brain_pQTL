@@ -102,6 +102,10 @@ table_legend <- data.table(tables = c("ST1 Mapping results",
                                            "columns follow the output in hyprcoloc R package: gene_investigated = the gene that was investigated. traits = the traits that were deemed to hyprcolocalise. "))
 
 #
+for(i in 1:length(list_all_tables)) {
+  writexl::write_xlsx(x = list_all_tables[[i]],
+                      path = paste0("Results/", gsub(" ", "_", names(list_all_tables)[[i]]), ".xlsx"))
+}
 
 writexl::write_xlsx(x = c("Tables legend" = list(table_legend), list_all_tables),
                     path = "Results/supplementary_tables.xlsx")
