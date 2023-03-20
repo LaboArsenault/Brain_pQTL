@@ -215,7 +215,7 @@ v <- ven_2_set(input = input, cex = 0.80, cat.cex = 0.95,
 grid.newpage()
 grid.draw(v)
 # plot  
-reso <- 300
+reso <- 1200
 length <- 480*reso/72
 grid.newpage()
 tiff(file="Results/VennDiagramm_comparepwas_mapping.tiff", units="px", 
@@ -225,6 +225,11 @@ grid.draw(v)
 # grid.arrange(gTree(children=v), top="Venn Diagramm of protein overlap between Mapping and PWAS")
 dev.off()
 
+grid.newpage()
+png(file="Results/VennDiagramm_comparepwas_mapping.png", units="px", 
+     res=reso,height=length,width=length ) # or other device
+grid.draw(v)
+dev.off()
 
 #####hyprcoloc plot
 dir.create("Results/Hypr_plot")
